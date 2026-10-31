@@ -15,7 +15,7 @@ const write = (path: string, text: string) => {
   writeFileSync(path, text);
 };
 
-write(join(home, ".config/marshal-factory/config.json"), JSON.stringify({ factory: { budgetUsd: 1 } }));
+write(join(home, ".config/software-factory/config.json"), JSON.stringify({ factory: { budgetUsd: 1 } }));
 const worktree = join(home, "worktree");
 write(join(worktree, ".git/HEAD"), "ref: refs/heads/factory/TST-1\n");
 // What the old reporter cached for the old hook: far over the old config's cap.

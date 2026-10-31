@@ -6,7 +6,7 @@ import { DEFAULT_MODEL, DEFAULT_PROVIDER } from "./harness";
 import { pricingSchema } from "./pricing";
 import { inTestMode } from "./test-mode";
 
-export const CONFIG_PATH = process.env.MARSHAL_FACTORY_CONFIG ?? join(homedir(), ".config/marshal-factory/config.json");
+export const CONFIG_PATH = process.env.MARSHAL_FACTORY_CONFIG ?? join(homedir(), ".config/software-factory/config.json");
 
 /** The machine a regression run's runner code acts as, so the jobs a script creates can belong to it. */
 export const TEST_MACHINE_ID = "test-machine";
@@ -14,7 +14,7 @@ export const TEST_MACHINE_ID = "test-machine";
 /** The Modal image runners launch sandboxes from; scripts/sandbox-image.ts writes it. */
 export const SANDBOX_IMAGE_PATH = process.env.MARSHAL_FACTORY_SANDBOX_IMAGE ?? join(dirname(CONFIG_PATH), "sandbox-image.json");
 
-export const GITHUB_APP_PATH = process.env.MARSHAL_FACTORY_GITHUB_APP ?? join(homedir(), ".config/marshal-factory/github-app.json");
+export const GITHUB_APP_PATH = process.env.MARSHAL_FACTORY_GITHUB_APP ?? join(homedir(), ".config/software-factory/github-app.json");
 
 const home = (path: string) => path.replace(/^~(?=\/|$)/, homedir());
 

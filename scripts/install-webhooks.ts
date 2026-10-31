@@ -39,7 +39,7 @@ async function linearWebhook() {
         teamId: teams.nodes[0]!.id,
         resourceTypes: ["Issue", "Comment"],
         secret: process.env.LINEAR_WEBHOOK_SECRET,
-        label: "marshal-factory intake",
+        label: "software-factory intake",
       },
     },
     z.object({ webhookCreate: z.object({ webhook: z.object({ id: z.string() }) }) }),

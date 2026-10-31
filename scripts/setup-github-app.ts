@@ -24,8 +24,8 @@ const base = `http://localhost:${args.port}`;
 let state: string | undefined = randomBytes(16).toString("hex");
 
 const manifest = {
-  name: "marshal-factory-ski043",
-  url: "https://github.com/ski043/marshal-factory",
+  name: "software-factory-Pipo2410",
+  url: "https://github.com/Pipo2410/software-factory",
   hook_attributes: { url: `${ingestBase}/webhooks/github`, active: true },
   redirect_url: `${base}/callback`,
   setup_url: `${base}/installed`,
@@ -57,7 +57,7 @@ const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
 const html = (body: string, status = 200) =>
-  new Response(`<!doctype html><meta charset="utf-8"><title>marshal-factory GitHub App</title>${body}`, {
+  new Response(`<!doctype html><meta charset="utf-8"><title>software-factory GitHub App</title>${body}`, {
     status,
     headers: { "content-type": "text/html; charset=utf-8" },
   });
@@ -78,7 +78,7 @@ async function callback(url: URL) {
   state = undefined;
   const res = await fetch(`${GITHUB_API}/app-manifests/${encodeURIComponent(code)}/conversions`, {
     method: "POST",
-    headers: { accept: "application/vnd.github+json", "user-agent": "marshal-factory" },
+    headers: { accept: "application/vnd.github+json", "user-agent": "software-factory" },
     signal: AbortSignal.timeout(20_000),
   });
   if (res.status !== 201) {

@@ -15,7 +15,7 @@ import { imageProblem, IMAGE_BUNDLES, readSandboxImage } from "../lib/sandbox";
 //   5. redeploy the ingest Function when its bundle's inputs changed since the last rollout
 //   6. rebuild the sandbox image when its pins drifted or its bundles' inputs changed since it was built
 //   7. reinstall the runner and wait for its first clean tick
-// Then it records the commit in ~/.config/marshal-factory/rollout.json for the next run.
+// Then it records the commit in ~/.config/software-factory/rollout.json for the next run.
 //   bun scripts/rollout.ts [--wait] [--canary] [--force] [--checkout <path>]
 // --canary runs scripts/canary.ts afterwards. --force rolls out even when the commit was rolled out
 // already. --checkout names the live checkout when this script runs from another one.
@@ -28,7 +28,7 @@ const option = (name: string) => {
   return i >= 0 ? args[i + 1] : undefined;
 };
 const checkout = resolve(option("--checkout") ?? join(import.meta.dirname, ".."));
-const LOG_PATH = join(homedir(), "Library/Logs/marshal-factory/runner.log");
+const LOG_PATH = join(homedir(), "Library/Logs/software-factory/runner.log");
 const ALREADY_STOPPED = "--runner-stopped";
 
 const t0 = Date.now();
