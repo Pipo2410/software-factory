@@ -96,11 +96,25 @@ export function readT3Runtime(userdataDir = t3UserdataDir()) {
 }
 
 const settingsFile = z.looseObject({
-  providerInstances: z.record(
-    z.string(),
-    z.looseObject({ driver: z.string(), enabled: z.boolean().default(true), displayName: z.string().nullish() }),
-  ),
+  providerInstances: z
+    .record(
+      z.string(),
+      z.looseObject({ driver: z.string(), enabled: z.boolean().nullish(), config: z.unknown().optional(), displayName: z.string().nullish() }),
+    )
+    .default({}),
 });
+
+// T3 keeps one default instance per built-in driver in memory, so settings.json lists only the ones the user edited.
+const DEFAULT_DRIVERS = ["codex", "claudeAgent", "cursor", "grok", "fx", "opencode", "antigravity", "pi", "muse"];
+const OFF_BY_DEFAULT = new Set(["cursor", "grok", "fx", "muse", "pi", "opencode", "antigravity"]);
+
+const configEnabled = (config: unknown) =>
+  typeof config === "object" && config !== null && "enabled" in config && typeof config.enabled === "boolean" ? config.enabled : undefined;
+
+const isEnabled = (instance: { driver: string; enabled?: boolean | null; config?: unknown }) =>
+  instance.enabled === false || configEnabled(instance.config) === false
+    ? false
+    : (instance.enabled ?? configEnabled(instance.config) ?? !OFF_BY_DEFAULT.has(instance.driver));
 
 const manifestModel = z.looseObject({ slug: z.string(), name: z.string().optional() });
 const manifestFile = z.looseObject({
@@ -127,14 +141,16 @@ export function readHarnesses(userdataDir = t3UserdataDir()): Harness[] {
   } catch {
     // Harnesses without models still show which providers exist.
   }
-  return Object.entries(providerInstances).map(([id, instance]) => {
+  const instances = { ...providerInstances };
+  for (const driver of DEFAULT_DRIVERS) instances[driver] ??= { driver };
+  return Object.entries(instances).map(([id, instance]) => {
     const known = Object.values(manifest.providers[instance.driver]?.models ?? []);
     const nameOf = new Map(known.map((m) => [m.slug, m.name]));
     return {
       id,
       driver: instance.driver,
       name: harnessLabel(id, instance.driver, instance.displayName),
-      enabled: instance.enabled,
+      enabled: isEnabled(instance),
       models: (manifest.currentModels[instance.driver] ?? []).map((slug) => ({ slug, name: nameOf.get(slug) || slug })),
     };
   });

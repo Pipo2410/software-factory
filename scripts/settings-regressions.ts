@@ -9,7 +9,7 @@ process.env.FACTORY_OWNER_EMAILS = OWNER;
 
 const { db } = await import("../db/client");
 const { jobs, settings } = await import("../db/schema");
-const { DEFAULT_MODEL, DEFAULT_PROVIDER } = await import("../lib/harness");
+const { DEFAULT_MODEL, DEFAULT_PROVIDER, harnessLabel } = await import("../lib/harness");
 const { imageOutdated, rebuildText, reportedDrift, reportedHarnesses, reportedSandbox, sandboxLogin } = await import("../lib/machine");
 const { readSettings, saveSettings, SETTINGS_ID, writeSettings } = await import("../lib/settings");
 const { readHarnesses } = await import("../lib/t3-state");
@@ -45,13 +45,60 @@ assert.deepEqual(
     { id: "work-claude", driver: "claudeAgent", name: "Claude (work)", enabled: true, models: [{ slug: "model-a", name: "Model A" }, { slug: "model-b", name: "Model B" }] },
     { id: "antigravity", driver: "antigravity", name: "Gravity", enabled: true, models: [{ slug: "grav-1", name: "Gravity One" }] },
     { id: "mystery", driver: "mystery-cli", name: "mystery", enabled: true, models: [] },
+    { id: "grok", driver: "grok", name: "Grok Build", enabled: false, models: [] },
+    { id: "fx", driver: "fx", name: "fx", enabled: false, models: [] },
+    { id: "opencode", driver: "opencode", name: "OpenCode", enabled: false, models: [] },
+    { id: "pi", driver: "pi", name: "Pi", enabled: false, models: [] },
+    { id: "muse", driver: "muse", name: "Muse Code", enabled: false, models: [] },
   ],
   "each provider instance gets its driver's current models, named from the manifest, the slug when it has no name",
 );
 assert.deepEqual(
   readHarnesses(join(fixtures, "no-manifest")),
-  [{ id: "codex", driver: "codex", name: "Codex", enabled: true, models: [] }],
+  [
+    { id: "codex", driver: "codex", name: "Codex", enabled: true, models: [] },
+    ...["claudeAgent", "cursor", "grok", "fx", "opencode", "antigravity", "pi", "muse"].map((id) => ({
+      id,
+      driver: id,
+      name: harnessLabel(id),
+      enabled: id === "claudeAgent",
+      models: [],
+    })),
+  ],
   "without a manifest the harnesses still show, with no models",
+);
+const claudeModels = [{ slug: "model-a", name: "Model A" }];
+const openCodeModels = [{ slug: "oc-1", name: "OpenCode One" }];
+assert.deepEqual(
+  readHarnesses(join(fixtures, "defaults")),
+  [
+    { id: "codex", driver: "codex", name: "Codex", enabled: true, models: [] },
+    { id: "claudeAgent", driver: "claudeAgent", name: "Claude Code", enabled: true, models: claudeModels },
+    { id: "cursor", driver: "cursor", name: "Cursor", enabled: false, models: [] },
+    { id: "grok", driver: "grok", name: "Grok Build", enabled: false, models: [] },
+    { id: "fx", driver: "fx", name: "fx", enabled: false, models: [] },
+    { id: "opencode", driver: "opencode", name: "OpenCode", enabled: false, models: openCodeModels },
+    { id: "antigravity", driver: "antigravity", name: "Antigravity", enabled: false, models: [] },
+    { id: "pi", driver: "pi", name: "Pi", enabled: false, models: [] },
+    { id: "muse", driver: "muse", name: "Muse Code", enabled: false, models: [] },
+  ],
+  "a settings file with no providerInstances still reports T3's default instance for each built-in driver",
+);
+assert.deepEqual(
+  readHarnesses(join(fixtures, "partial")),
+  [
+    { id: "codex", driver: "codex", name: "Codex", enabled: false, models: [] },
+    { id: "opencode", driver: "opencode", name: "OpenCode", enabled: true, models: openCodeModels },
+    { id: "work-claude", driver: "claudeAgent", name: "Claude (work)", enabled: true, models: claudeModels },
+    { id: "claudeAgent", driver: "claudeAgent", name: "Claude Code", enabled: true, models: claudeModels },
+    { id: "cursor", driver: "cursor", name: "Cursor", enabled: false, models: [] },
+    { id: "grok", driver: "grok", name: "Grok Build", enabled: false, models: [] },
+    { id: "fx", driver: "fx", name: "fx", enabled: false, models: [] },
+    { id: "antigravity", driver: "antigravity", name: "Antigravity", enabled: false, models: [] },
+    { id: "pi", driver: "pi", name: "Pi", enabled: false, models: [] },
+    { id: "muse", driver: "muse", name: "Muse Code", enabled: false, models: [] },
+  ],
+  "explicit instances keep file order and win over the defaults; enabled falls back to config, then the driver default",
 );
 assert.throws(() => readHarnesses(join(fixtures, "broken")), "a settings file of the wrong shape throws, so the inventory says unknown");
 assert.throws(() => readHarnesses(join(fixtures, "missing")), "a missing settings file throws");
