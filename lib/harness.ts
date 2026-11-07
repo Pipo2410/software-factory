@@ -34,6 +34,11 @@ const DRIVER_LABELS: Record<string, string> = {
   codex: "Codex",
   cursor: "Cursor",
   antigravity: "Antigravity",
+  opencode: "OpenCode",
+  grok: "Grok Build",
+  fx: "fx",
+  pi: "Pi",
+  muse: "Muse Code",
 };
 
 export const harnessLabel = (id: string, driver?: string, displayName?: string | null) =>

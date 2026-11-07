@@ -1,0 +1,7 @@
+{
+  "providerInstances": {
+    "codex": { "driver": "codex", "config": { "enabled": false } },
+    "opencode": { "driver": "opencode", "enabled": true },
+    "work-claude": { "driver": "claudeAgent", "displayName": "Claude (work)" }
+  }
+}

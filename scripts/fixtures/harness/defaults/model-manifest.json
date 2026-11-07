@@ -1,0 +1,9 @@
+{
+  "manifest": {
+    "currentModels": { "claudeAgent": ["model-a"], "opencode": ["oc-1"] },
+    "providers": {
+      "claudeAgent": { "models": [{ "slug": "model-a", "name": "Model A" }] },
+      "opencode": { "models": [{ "slug": "oc-1", "name": "OpenCode One" }] }
+    }
+  }
+}
